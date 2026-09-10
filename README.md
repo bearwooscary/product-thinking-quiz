@@ -7,7 +7,6 @@ Open any file directly in a browser — there is no build step.
 | File | What it is |
 |---|---|
 | `index.html` | The quiz app. 8 multiple-choice questions, one per module (metrics gets two), with a running score pinned to the top of the page. A wrong answer reveals the correct option and explains why. |
-| `product-thinking-quiz.html` | A longer 14-question variant covering the same seven modules in more depth. |
 | `product-thinking.html` | A single-statement intro page: title and tagline. |
 
 ## Coverage
