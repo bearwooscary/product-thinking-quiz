@@ -1,0 +1,664 @@
+<title>Product Thinking Quiz</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --paper: #F1F3F1;
+    --card: #FBFCFB;
+    --ink: #16211E;
+    --ink-soft: #4C5B56;
+    --rule: #CBD3CF;
+    --accent: #0E6B60;
+    --accent-wash: #DCEAE6;
+    --wrong: #A6402A;
+    --wrong-wash: #F2E1DB;
+    --display: "Spectral", Georgia, "Times New Roman", serif;
+    --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #101514;
+      --card: #171E1C;
+      --ink: #E8EDEA;
+      --ink-soft: #93A29C;
+      --rule: #2A3733;
+      --accent: #4FBFAE;
+      --accent-wash: #10322D;
+      --wrong: #E39179;
+      --wrong-wash: #351F19;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #101514;
+    --card: #171E1C;
+    --ink: #E8EDEA;
+    --ink-soft: #93A29C;
+    --rule: #2A3733;
+    --accent: #4FBFAE;
+    --accent-wash: #10322D;
+    --wrong: #E39179;
+    --wrong-wash: #351F19;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.55;
+    padding-inline: clamp(18px, 5vw, 48px);
+    padding-block: clamp(40px, 7vh, 72px) 64px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin-inline: auto;
+    display: grid;
+    gap: 32px;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0;
+  }
+
+  h1 {
+    margin: 10px 0 0;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(2.4rem, 8vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  h1 em {
+    display: block;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ink-soft);
+  }
+
+  .lede {
+    margin: 18px 0 0;
+    font-family: var(--display);
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 46ch;
+  }
+
+  .score {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+    padding-block: 12px;
+    display: grid;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-soft);
+  }
+
+  .score-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .score b {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .track {
+    height: 3px;
+    background: var(--rule);
+    overflow: hidden;
+  }
+
+  .bar {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: width 260ms ease;
+  }
+
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 22px;
+  }
+
+  li {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    padding: clamp(18px, 3.5vw, 26px);
+    display: grid;
+    gap: 14px;
+  }
+
+  .tag {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    display: flex;
+    gap: 0.7em;
+    align-items: baseline;
+    margin: 0;
+  }
+
+  .tag span {
+    color: var(--accent);
+  }
+
+  .q {
+    font-family: var(--display);
+    font-size: 1.3rem;
+    line-height: 1.35;
+    font-weight: 600;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  .opts {
+    display: grid;
+    gap: 8px;
+  }
+
+  .opt {
+    font: inherit;
+    text-align: left;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--rule);
+    padding: 11px 14px;
+    cursor: pointer;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    transition: border-color 140ms ease, background-color 140ms ease;
+  }
+
+  .opt .key {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    padding-top: 2px;
+  }
+
+  .opt:hover:not(:disabled) {
+    border-color: var(--accent);
+  }
+
+  .opt:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .opt:disabled {
+    cursor: default;
+  }
+
+  .opt.correct {
+    border-color: var(--accent);
+    background: var(--accent-wash);
+  }
+
+  .opt.correct .key {
+    color: var(--accent);
+  }
+
+  .opt.wrong {
+    border-color: var(--wrong);
+    background: var(--wrong-wash);
+  }
+
+  .opt.wrong .key {
+    color: var(--wrong);
+  }
+
+  .opt.dim {
+    opacity: 0.5;
+  }
+
+  .why {
+    border-left: 2px solid var(--accent);
+    padding-left: 14px;
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    display: grid;
+    gap: 4px;
+  }
+
+  .why b {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .why.miss {
+    border-left-color: var(--wrong);
+  }
+
+  .why.miss b {
+    color: var(--wrong);
+  }
+
+  .result {
+    border: 1px solid var(--accent);
+    padding: clamp(20px, 4vw, 28px);
+    display: grid;
+    gap: 10px;
+  }
+
+  .result h2 {
+    font-family: var(--display);
+    font-size: 1.6rem;
+    margin: 0;
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  .result p {
+    margin: 0;
+    color: var(--ink-soft);
+    max-width: 52ch;
+  }
+
+  .reset {
+    justify-self: start;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--accent);
+    color: var(--paper);
+    border: none;
+    padding: 10px 18px;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+
+  .reset:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+
+  footer {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    border-top: 1px solid var(--rule);
+    padding-top: 14px;
+    line-height: 1.8;
+  }
+
+  footer a {
+    color: var(--accent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Institute of Digital Government &middot; Product Thinking pathway</p>
+    <h1>Fourteen questions<em>before the build</em></h1>
+    <p class="lede">A self-check across the seven modules &mdash; problem framing, the 5 Whys, the 4Cs, metrics, risk, and customer experience. Pick an answer to see why it&rsquo;s right.</p>
+  </header>
+
+  <div class="score">
+    <div class="score-row">
+      <span id="tally"><b>0</b> of 14 answered</span>
+      <span id="correct"><b>0</b> correct</span>
+    </div>
+    <div class="track"><div class="bar" id="bar"></div></div>
+  </div>
+
+  <ol id="quiz"></ol>
+
+  <div class="result" id="result" hidden>
+    <h2 id="result-title">Done</h2>
+    <p id="result-body"></p>
+    <button class="reset" id="reset" type="button">Take it again</button>
+  </div>
+
+  <footer>
+    Questions drawn from the Product Thinking learning pathway at
+    <a href="https://www.idg.gov.sg/product-thinking/" target="_blank" rel="noopener">idg.gov.sg/product-thinking</a>.
+  </footer>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    mod: "Module 1",
+    topic: "Understanding the problem",
+    q: "According to the pathway, why do most digital projects fail?",
+    options: [
+      "The team executes poorly",
+      "They solve the wrong problem",
+      "The technology chosen is immature",
+      "Funding runs out before launch"
+    ],
+    answer: 1,
+    why: "The opening module is blunt about it: projects fail not because of poor execution, but because they solve the wrong problem. Teams reach for a CRM or an AI model before diagnosing what is actually blocking the outcome."
+  },
+  {
+    mod: "Module 1",
+    topic: "Understanding the problem",
+    q: "Grab, Amazon and Netflix are cited as examples of what?",
+    options: [
+      "Launching with a complete platform vision from day one",
+      "Winning by out-spending incumbents on technology",
+      "Mastering one problem first, then scaling from it",
+      "Replacing government services with private alternatives"
+    ],
+    answer: 2,
+    why: "Grab started with taxis, Amazon with books, Netflix with DVD rentals. Each solved a single problem well before expanding — the opposite of launching with a grand comprehensive vision."
+  },
+  {
+    mod: "Module 1",
+    topic: "Understanding the problem",
+    q: "Which three dimensions does product thinking insist on integrating?",
+    options: [
+      "Policy, operations and technology",
+      "Design, engineering and marketing",
+      "Budget, timeline and scope",
+      "Citizens, agencies and vendors"
+    ],
+    answer: 0,
+    why: "Policy–Ops–Tech integration is one of the founding principles, alongside problems before solutions and outcomes over outputs. A fix in one dimension alone rarely holds."
+  },
+  {
+    mod: "Module 2",
+    topic: "Start with the whys",
+    q: "What is the Five Whys actually for?",
+    options: [
+      "Building consensus by letting five stakeholders each object once",
+      "Justifying a chosen solution to five levels of approvers",
+      "Estimating how long a fix will take",
+      "Moving from a surface symptom to a root cause you can act on"
+    ],
+    answer: 3,
+    why: "It drills from symptom to cause. The module stresses that problems rarely have a single root cause — you are hunting for causes that sit within your team's control and connect to the outcome you want to move."
+  },
+  {
+    mod: "Module 2",
+    topic: "Start with the whys",
+    q: "You run the Five Whys and land on “national procurement rules make this slow.” What does the module say about a cause like that?",
+    options: [
+      "It is the right level to intervene — escalate and wait",
+      "It is a real cause, but not an actionable one for your team",
+      "It proves the problem statement was wrong",
+      "It means you should stop at three whys next time"
+    ],
+    answer: 1,
+    why: "The guidance is to intervene at a level you can actually act on. A cause outside your team's control may be perfectly true and still be the wrong place to aim a solution."
+  },
+  {
+    mod: "Module 3",
+    topic: "Craft a clear problem statement",
+    q: "What are the 4Cs of a problem statement?",
+    options: [
+      "Context, Cost, Constraint, Commitment",
+      "Customer, Capability, Capacity, Cadence",
+      "Clarity, Consequence, Cause, Confirmation",
+      "Concept, Criteria, Change, Close"
+    ],
+    answer: 2,
+    why: "Clarity, Consequence, Cause and Confirmation. A vague problem leads to a vague solution, so the statement gets written — sharp and data-backed — before any build begins."
+  },
+  {
+    mod: "Module 3",
+    topic: "Craft a clear problem statement",
+    q: "“Citizens repeatedly fill in the same details across government services.” Which C is still missing?",
+    options: [
+      "Confirmation — the data showing how often and how badly",
+      "Clarity — the problem is not stated plainly",
+      "Cause — it names no solution",
+      "Consequence — it does not name a technology"
+    ],
+    answer: 0,
+    why: "The statement is clear and implies a consequence, but nothing backs it. Confirmation is the evidence — form counts, drop-off rates, complaint volumes — that turns an anecdote into a problem worth funding."
+  },
+  {
+    mod: "Module 4",
+    topic: "Metrics",
+    q: "The pathway uses SMART to test whether a metric is any good. What does the R stand for?",
+    options: [
+      "Reportable — it fits in the monthly deck",
+      "Relevant — it connects to the objective",
+      "Robust — it survives an audit",
+      "Repeatable — anyone can collect it"
+    ],
+    answer: 1,
+    why: "Specific, Measurable, Achievable, Relevant, Time-bound. Relevance is the one that stops a team tracking something easy to count but disconnected from the outcome."
+  },
+  {
+    mod: "Module 4",
+    topic: "Metrics",
+    q: "Which of these is a leading indicator?",
+    options: [
+      "Annual savings realised across the agency",
+      "Total processing time reduced over the year",
+      "Weekly completion rate of the new form",
+      "Citizen satisfaction score at year end"
+    ],
+    answer: 2,
+    why: "Leading indicators give early feedback so you can course-correct; lagging indicators confirm the real-world result after the fact. You need both, mapped along the same chain."
+  },
+  {
+    mod: "Module 4",
+    topic: "Metrics",
+    q: "What does the Value-Cost Ratio measure?",
+    options: [
+      "How much value is generated per dollar spent",
+      "The ratio of build cost to maintenance cost",
+      "How many users a feature reaches per sprint",
+      "Cost per staff hour saved by automation"
+    ],
+    answer: 0,
+    why: "VCR is the argument for continued investment: value generated for every dollar spent. It is what turns a working product into a funded one."
+  },
+  {
+    mod: "Module 5",
+    topic: "Assumptions and risks",
+    q: "What is the central question of the assumptions module?",
+    options: [
+      "Who signs off if this fails?",
+      "What could go wrong, and what is the cheapest way to find out?",
+      "How much contingency should we hold?",
+      "Which risks can we transfer to the vendor?"
+    ],
+    answer: 1,
+    why: "The point is not to eliminate risk but to buy information cheaply — surface the assumption, then find the smallest test that could disprove it, before it becomes an expensive mistake in production."
+  },
+  {
+    mod: "Module 5",
+    topic: "Assumptions and risks",
+    q: "An early health appointment booking service ran on a FormSG form feeding an Excel sheet. Why build something that obviously would not scale?",
+    options: [
+      "The team lacked engineering capacity",
+      "Procurement for a real system had not cleared",
+      "To test market risk before investing in engineering",
+      "Excel was the agency's approved standard"
+    ],
+    answer: 2,
+    why: "It was a deliberate test of demand. The A/B test settled it — zero bookings in the control group against 24 in the treatment group, with users sharing it organically. Only then is scale worth building."
+  },
+  {
+    mod: "Module 5",
+    topic: "Assumptions and risks",
+    q: "Which sequence describes the staged path from idea to steady state?",
+    options: [
+      "Pilot → procurement → rollout → review",
+      "Discovery → design → delivery → handover",
+      "Prototype → tender → launch → support",
+      "Proof of concept → proof of value → scale → maturity"
+    ],
+    answer: 3,
+    why: "Proof of concept tests feasibility, proof of value tests demand, then you scale, then you maintain. Staged delivery over big-bang delivery is one of the three mindset shifts the pathway closes on."
+  },
+  {
+    mod: "Module 6",
+    topic: "A good customer experience",
+    q: "Why does the pathway argue experience matters more, not less, for compulsory services?",
+    options: [
+      "Because citizens cannot go elsewhere",
+      "Because usage numbers are guaranteed anyway",
+      "Because compliance rules demand a higher standard",
+      "Because they attract more media attention"
+    ],
+    answer: 0,
+    why: "A captive user has no exit, so the burden sits with the service. That is also the logic of the 11-Star exercise — imagine an absurdly good journey, then find the genuinely worthwhile experience between adequate and impossible. ParkingSG and RedeemSG are the worked examples."
+  }
+];
+
+const quizEl = document.getElementById("quiz");
+const tallyEl = document.getElementById("tally");
+const correctEl = document.getElementById("correct");
+const barEl = document.getElementById("bar");
+const resultEl = document.getElementById("result");
+const resultTitle = document.getElementById("result-title");
+const resultBody = document.getElementById("result-body");
+
+const KEYS = ["A", "B", "C", "D"];
+let answered = 0;
+let correct = 0;
+
+function render() {
+  quizEl.replaceChildren();
+  answered = 0;
+  correct = 0;
+  resultEl.hidden = true;
+
+  QUESTIONS.forEach((item, i) => {
+    const li = document.createElement("li");
+
+    const tag = document.createElement("p");
+    tag.className = "tag";
+    const num = document.createElement("span");
+    num.textContent = String(i + 1).padStart(2, "0");
+    tag.append(num, document.createTextNode(item.mod + " — " + item.topic));
+
+    const q = document.createElement("p");
+    q.className = "q";
+    q.textContent = item.q;
+
+    const opts = document.createElement("div");
+    opts.className = "opts";
+
+    const why = document.createElement("div");
+    why.className = "why";
+    why.hidden = true;
+
+    item.options.forEach((text, j) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "opt";
+      btn.id = "q" + i + "o" + j;
+      const key = document.createElement("span");
+      key.className = "key";
+      key.textContent = KEYS[j];
+      const label = document.createElement("span");
+      label.textContent = text;
+      btn.append(key, label);
+      btn.addEventListener("click", () => choose(item, opts, why, j));
+      opts.append(btn);
+    });
+
+    li.append(tag, q, opts, why);
+    quizEl.append(li);
+  });
+
+  update();
+}
+
+function choose(item, opts, why, picked) {
+  const buttons = Array.from(opts.children);
+  if (buttons[0].disabled) return;
+
+  const right = picked === item.answer;
+  buttons.forEach((btn, j) => {
+    btn.disabled = true;
+    if (j === item.answer) btn.classList.add("correct");
+    else if (j === picked) btn.classList.add("wrong");
+    else btn.classList.add("dim");
+  });
+
+  const heading = document.createElement("b");
+  heading.textContent = right ? "Correct" : "Not quite";
+  const text = document.createElement("span");
+  text.textContent = item.why;
+  why.className = right ? "why" : "why miss";
+  why.replaceChildren(heading, text);
+  why.hidden = false;
+
+  answered += 1;
+  if (right) correct += 1;
+  update();
+}
+
+function update() {
+  const total = QUESTIONS.length;
+  tallyEl.replaceChildren(strong(answered), document.createTextNode(" of " + total + " answered"));
+  correctEl.replaceChildren(strong(correct), document.createTextNode(" correct"));
+  barEl.style.width = (answered / total) * 100 + "%";
+
+  if (answered === total) {
+    const pct = Math.round((correct / total) * 100);
+    const score = correct + " of " + total + " (" + pct + "%). ";
+    if (pct >= 85) {
+      resultTitle.textContent = "You framed the problem first.";
+      resultBody.textContent = score + "You are asking the diagnostic questions before reaching for a solution, which is the whole discipline. Now run the 4Cs on something already in flight.";
+    } else if (pct >= 60) {
+      resultTitle.textContent = "Solid, with gaps worth closing.";
+      resultBody.textContent = score + "The shape is there. Revisit the modules behind the ones you missed — metrics and risk are where most teams lose the thread.";
+    } else {
+      resultTitle.textContent = "Start with the whys.";
+      resultBody.textContent = score + "Worth walking the pathway module by module. The three shifts to hold onto: solutions to problems, outputs to outcomes, big bang to staged delivery.";
+    }
+    resultEl.hidden = false;
+  }
+}
+
+function strong(n) {
+  const b = document.createElement("b");
+  b.textContent = String(n);
+  return b;
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+render();
+</script>
